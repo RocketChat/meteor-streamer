@@ -1,5 +1,5 @@
-/* globals EV, test:true, stream:true */
-/* exported stream, test */
+/* globals EV, test:true, radio:true */
+/* exported radio, test */
 
 Meteor.Radio = class Radio extends EV {
 	constructor(name) {
@@ -45,6 +45,7 @@ Meteor.Radio = class Radio extends EV {
 		Meteor.publish(this.subscriptionName, function(eventName) {
 			// TODO validate permissions
 
+			// TODO remove test
 			if (eventName === 'stop') {
 				this.stop();
 				console.log('stop', eventName);
@@ -91,22 +92,22 @@ Meteor.Radio = class Radio extends EV {
 	}
 };
 
-stream = new Meteor.Radio('chat');
+radio = new Meteor.Radio('chat');
 
-// Stream.permissions.write(function(eventName) {
+// radio.permissions.write(function(eventName) {
 // 	console.log('permissions write', eventName);
 // 	return true;
 // });
 
-// Stream.permissions.read(function(eventName) {
+// radio.permissions.read(function(eventName) {
 // 	console.log('permissions read', eventName);
 // 	return true;
 // });
 
 test = function() {
-	stream.emit('message', 'new message');
+	radio.emit('message', 'new message');
 };
 
-// Stream.on('message', function(message) {
+// radio.on('message', function(message) {
 // 	console.log('message: ' + message);
 // });
