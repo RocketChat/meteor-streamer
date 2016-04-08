@@ -20,12 +20,13 @@ Meteor.RadioStation = new RadioStation;
 
 
 Meteor.Radio = class Radio extends EV {
-	constructor(name) {
+	constructor(name, {useCollection} = {useCollection: false}) {
 		super();
 
-		// console.log('constructor', name);
+		// TODO allow only one instance by name
 
 		this.name = name;
+		this.useCollection = useCollection;
 		this.subscriptions = {};
 
 		Meteor.RadioStation.on(this.subscriptionName, (...args) => {
@@ -44,10 +45,8 @@ Meteor.Radio = class Radio extends EV {
 	}
 
 	subscribe(eventName) {
-		// console.log('subscribe', eventName);
-		return Meteor.subscribe(this.subscriptionName, eventName, {
+		return Meteor.subscribe(this.subscriptionName, eventName, this.useCollection, {
 			onStop: () => {
-				// console.log('onStop');
 				this.unsubscribe(eventName);
 			}
 		});
@@ -64,7 +63,6 @@ Meteor.Radio = class Radio extends EV {
 	}
 
 	on(eventName, callback) {
-		// console.log('on', eventName);
 		if (!this.subscriptions[eventName]) {
 			this.subscriptions[eventName] = {
 				subscription: this.subscribe(eventName)

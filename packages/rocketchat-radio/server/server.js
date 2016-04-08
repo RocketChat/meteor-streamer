@@ -62,7 +62,7 @@ Meteor.Radio = class Radio extends EV {
 
 	iniPublication() {
 		const stream = this;
-		Meteor.publish(this.subscriptionName, function(eventName) {
+		Meteor.publish(this.subscriptionName, function(eventName, useCollection) {
 			if (stream._allowRead.call(this, eventName) !== true) {
 				this.stop();
 				return;
@@ -79,11 +79,12 @@ Meteor.Radio = class Radio extends EV {
 				stream.removeSubscription(subscription, eventName);
 			});
 
-			// Collection compatibility
-			this._session.sendAdded(stream.subscriptionName, 'id', {
-				eventName: eventName
-			});
-			// END Collection compatibility
+			if (useCollection === true) {
+				// Collection compatibility
+				this._session.sendAdded(stream.subscriptionName, 'id', {
+					eventName: eventName
+				});
+			}
 
 			this.ready();
 		});
@@ -100,7 +101,6 @@ Meteor.Radio = class Radio extends EV {
 				return;
 			}
 
-			// console.log(eventName);
 			super.emitWithScope(eventName, this, ...args);
 		};
 
