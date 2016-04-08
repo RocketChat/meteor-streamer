@@ -49,7 +49,7 @@ Meteor.Radio = class Radio extends EV {
 			// TODO remove test
 			if (eventName === 'stop') {
 				this.stop();
-				console.log('stop', eventName);
+				// console.log('stop', eventName);
 				return;
 			}
 
@@ -72,14 +72,15 @@ Meteor.Radio = class Radio extends EV {
 
 			this.ready();
 
-			console.log('eventName', eventName);
+			// console.log('eventName', eventName);
 		});
 	}
 
 	initMethod() {
 		const method = {};
 		method[this.subscriptionName] = function(eventName, ...args) {
-			super.emit(eventName, ...args);
+			// TODO validate
+			super.emitWithScope(eventName, this, ...args);
 		};
 
 		Meteor.methods(method);
@@ -98,7 +99,7 @@ Meteor.Radio = class Radio extends EV {
 			});
 		});
 
-		console.log(eventName, args);
+		// console.log(eventName, args);
 	}
 };
 
@@ -118,6 +119,24 @@ test = function() {
 	radio.emit('message', 'new message');
 };
 
-radio.on('hi', function(message) {
-	console.log('hi: ' + message);
+function onAndReply(eventName, cb) {
+	radio.on(eventName, function(...args) {
+		radio.emit(eventName+'-reply', 'server-reply', ...cb.apply(this, args));
+	});
+}
+
+onAndReply('hi', function(...args) {
+	return args;
+});
+
+onAndReply('sum', function(a, b) {
+	return a + b;
+});
+
+onAndReply('logged', function() {
+	return !!this.userId;
+});
+
+onAndReply('userId', function() {
+	return this.userId;
 });

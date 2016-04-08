@@ -1,8 +1,24 @@
 <head>
-  <title>streams</title>
+	<title>streams</title>
+
+	<style type="text/css">
+		.test-failure {
+			color: red;
+		}
+
+		.test-success {
+			color: green;
+		}
+	</style>
 </head>
 
 <body>
-  <h1>Welcome to Meteor!</h1>
-  logged as: {{currentUser.username}}
+	<h1>Welcome to Meteor Radio stream test!</h1>
+	logged as: {{currentUser.username}}
+
+	<button class="start-test">Start test</button>
+
+	{{#each testResult}}
+		<div class="test-{{type}}">{{{text}}}</div>
+	{{/each}}
 </body>
