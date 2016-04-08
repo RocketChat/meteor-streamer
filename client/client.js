@@ -88,7 +88,8 @@ const testResultReactive = new ReactiveVar();
 function addTestResult(text, ok) {
 	testResult.push({
 		type: ok === true ? 'success' : 'failure',
-		text: (ok === true ? '[√] ' : '[x] ') + text
+		sign: ok === true ? '√' : 'X',
+		text: text
 	});
 
 	testResultReactive.set(testResult);

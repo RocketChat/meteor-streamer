@@ -2,12 +2,31 @@
 	<title>streams</title>
 
 	<style type="text/css">
+		.test-failure, .test-success {
+			line-height: 1.3em;
+			font-size: 1.2em;
+			font-family: monospace;
+		}
+
+		.test-failure span, .test-success span {
+			color: white;
+			padding: 2px 7px;
+		}
+
 		.test-failure {
 			color: red;
 		}
 
+		.test-failure span {
+			background-color: red;
+		}
+
 		.test-success {
 			color: green;
+		}
+
+		.test-success span {
+			background-color: green;
 		}
 	</style>
 </head>
@@ -16,9 +35,17 @@
 	<h1>Welcome to Meteor Radio stream test!</h1>
 	logged as: {{currentUser.username}}
 
+	<br/>
+	<br/>
+
 	<button class="start-test">Start test</button>
 
+	<br/>
+	<br/>
+
 	{{#each testResult}}
-		<div class="test-{{type}}">{{{text}}}</div>
+		<div class="test-{{type}}">
+			<span>{{sign}}</span> {{{text}}}
+		</div>
 	{{/each}}
 </body>
