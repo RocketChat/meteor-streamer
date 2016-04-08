@@ -1,5 +1,5 @@
-/* globals DDPCommon, EV, radio:true */
-/* exported radio */
+/* globals test, DDPCommon, EV, radio:true */
+/* exported radio, test */
 
 class RadioStation extends EV {
 	constructor() {
@@ -31,7 +31,7 @@ Meteor.Radio = class Radio extends EV {
 
 		Meteor.RadioStation.on(this.subscriptionName, (...args) => {
 			if (this.subscriptions[args[0]]) {
-				this.emit.apply(this, args);
+				super.emit.apply(this, args);
 			}
 		});
 	}
@@ -64,6 +64,10 @@ Meteor.Radio = class Radio extends EV {
 
 		super(eventName, callback);
 	}
+
+	emit(...args) {
+		Meteor.call(this.subscriptionName, ...args);
+	}
 };
 
 
@@ -76,3 +80,7 @@ radio.on('message', function(message) {
 radio.on('stop', function(message) {
 	console.log('stop: ' + message);
 });
+
+test = function() {
+	radio.emit('hi', 1);
+};

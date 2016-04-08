@@ -10,6 +10,7 @@ Meteor.Radio = class Radio extends EV {
 		this.subscriptionsByEventName = {};
 
 		this.iniPublication();
+		this.initMethod();
 	}
 
 	get subscriptionName() {
@@ -75,6 +76,15 @@ Meteor.Radio = class Radio extends EV {
 		});
 	}
 
+	initMethod() {
+		const method = {};
+		method[this.subscriptionName] = function(eventName, ...args) {
+			super.emit(eventName, ...args);
+		};
+
+		Meteor.methods(method);
+	}
+
 	emit(eventName, ...args) {
 		const subscriptions = this.subscriptionsByEventName[eventName];
 		if (!Array.isArray(subscriptions)) {
@@ -108,6 +118,6 @@ test = function() {
 	radio.emit('message', 'new message');
 };
 
-// radio.on('message', function(message) {
-// 	console.log('message: ' + message);
-// });
+radio.on('hi', function(message) {
+	console.log('hi: ' + message);
+});
