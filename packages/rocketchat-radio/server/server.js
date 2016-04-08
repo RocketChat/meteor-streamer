@@ -94,11 +94,13 @@ Meteor.Radio = class Radio extends EV {
 		const method = {};
 
 		method[this.subscriptionName] = function(eventName, ...args) {
+			this.unblock();
+
 			if (stream._allowWrite.call(this, eventName, ...args) !== true) {
 				return;
 			}
 
-			console.log(eventName);
+			// console.log(eventName);
 			super.emitWithScope(eventName, this, ...args);
 		};
 

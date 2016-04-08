@@ -44,10 +44,10 @@ Meteor.Radio = class Radio extends EV {
 	}
 
 	subscribe(eventName) {
-		console.log('subscribe', eventName);
+		// console.log('subscribe', eventName);
 		return Meteor.subscribe(this.subscriptionName, eventName, {
 			onStop: () => {
-				console.log('onStop');
+				// console.log('onStop');
 				this.unsubscribe(eventName);
 			}
 		});
