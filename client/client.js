@@ -44,4 +44,4 @@ Template.body.helpers({
 	}
 });
 
-setTimeout(test, 1000);
+// setTimeout(test, 1000);
