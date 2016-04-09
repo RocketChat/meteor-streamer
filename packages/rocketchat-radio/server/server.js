@@ -11,7 +11,14 @@ Meteor.RadioStation = new RadioStation;
 
 Meteor.Radio = class Radio extends EV {
 	constructor(name) {
+		if (Meteor.RadioStation.instances[name]) {
+			console.warn('Radio instance already exists:', name);
+			return Meteor.RadioStation.instances[name];
+		}
+
 		super();
+
+		Meteor.RadioStation.instances[name] = this;
 
 		this.name = name;
 		this.subscriptions = [];
