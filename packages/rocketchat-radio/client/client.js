@@ -4,6 +4,8 @@ class RadioStation extends EV {
 	constructor() {
 		super();
 
+		this.instances = {};
+
 		Meteor.connection._stream.on('message', (raw_msg) => {
 			const msg = DDPCommon.parseDDP(raw_msg);
 			if (msg && msg.msg === 'changed' && msg.collection && msg.fields && msg.fields.eventName && msg.fields.args) {
@@ -21,9 +23,14 @@ Meteor.RadioStation = new RadioStation;
 
 Meteor.Radio = class Radio extends EV {
 	constructor(name, {useCollection} = {useCollection: false}) {
+		if (Meteor.RadioStation.instances[name]) {
+			console.warn('Radio instance already exists:', name);
+			return Meteor.RadioStation.instances[name];
+		}
+
 		super();
 
-		// TODO allow only one instance by name
+		Meteor.RadioStation.instances[name] = this;
 
 		this.name = name;
 		this.useCollection = useCollection;
