@@ -1,5 +1,14 @@
 /* globals EV */
 
+class RadioStation {
+	constructor() {
+		this.instances = {};
+	}
+}
+
+Meteor.RadioStation = new RadioStation;
+
+
 Meteor.Radio = class Radio extends EV {
 	constructor(name) {
 		super();
