@@ -36,9 +36,10 @@ Meteor.Radio = class Radio extends EV {
 		this.useCollection = useCollection;
 		this.subscriptions = {};
 
-		Meteor.RadioStation.on(this.subscriptionName, (...args) => {
-			if (this.subscriptions[args[0]]) {
-				super.emit.apply(this, args);
+		Meteor.RadioStation.on(this.subscriptionName, (eventName, ...args) => {
+			if (this.subscriptions[eventName]) {
+				this.subscriptions[eventName].lastMessage = args;
+				super.emit.call(this, eventName, ...args);
 			}
 		});
 	}
@@ -57,6 +58,13 @@ Meteor.Radio = class Radio extends EV {
 				this.unsubscribe(eventName);
 			}
 		});
+	}
+
+	getLastMessageFromEvent(eventName) {
+		const subscription = this.subscriptions[eventName];
+		if (subscription && subscription.lastMessage) {
+			return subscription.lastMessage;
+		}
 	}
 
 	once(eventName, callback) {
