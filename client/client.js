@@ -16,7 +16,7 @@ function addTestResult(text, ok) {
 }
 
 function call(eventName, params, paramsReply) {
-	radio.once(eventName+'-reply', (serverReply, ...args) => {
+	radio.once(`${eventName}-reply`, (serverReply, ...args) => {
 		addTestResult(eventName + ' - ' + JSON.stringify(paramsReply), serverReply === 'server-reply' && JSON.stringify(args) === JSON.stringify(paramsReply));
 	});
 	radio.emit(eventName, ...params);
@@ -44,4 +44,8 @@ Template.body.helpers({
 	}
 });
 
-// setTimeout(test, 1000);
+setTimeout(test, 1000);
+
+radio.onReconnect(function() {
+	test();
+});

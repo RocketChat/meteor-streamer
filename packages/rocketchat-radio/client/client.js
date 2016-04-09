@@ -42,6 +42,10 @@ Meteor.Radio = class Radio extends EV {
 				super.emit.call(this, eventName, ...args);
 			}
 		});
+
+		Meteor.connection._stream.on('reset', () => {
+			super.emit.call(this, '__reconnect__');
+		});
 	}
 
 	get subscriptionName() {
@@ -58,6 +62,12 @@ Meteor.Radio = class Radio extends EV {
 				this.unsubscribe(eventName);
 			}
 		});
+	}
+
+	onReconnect(fn) {
+		if (typeof fn === 'function') {
+			super.on('__reconnect__', fn);
+		}
 	}
 
 	getLastMessageFromEvent(eventName) {
