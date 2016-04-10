@@ -23,23 +23,11 @@ streamer.transform('only-logged2', function() {
 	return !!this.userId;
 });
 
+streamer.allowRead('all');
+streamer.allowWrite('all');
 
-streamer.allowRead(function(eventName) {
-	if (eventName === 'only-logged-reply') {
-		return !!this.userId;
-	}
+streamer.allowRead('only-logged', 'logged');
+streamer.allowWrite('only-logged', 'logged');
 
-	if (eventName === 'only-logged2-reply') {
-		return !!this.userId;
-	}
-
-	return true;
-});
-
-streamer.allowWrite(function(eventName) {
-	if (eventName === 'only-logged2') {
-		return !!this.userId;
-	}
-
-	return true;
-});
+streamer.allowRead('only-logged2', 'all');
+streamer.allowWrite('only-logged2', 'logged');

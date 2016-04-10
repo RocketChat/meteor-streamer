@@ -30,29 +30,77 @@ Meteor.Streamer = class Streamer extends EV {
 		this.iniPublication();
 		this.initMethod();
 
-		this._allowRead = function() {
-			return true;
-		};
+		this._allowRead = {};
+		this._allowWrite = {};
 
-		this._allowWrite = function() {
-			return true;
-		};
+		this.allowRead('none');
+		this.allowWrite('none');
 	}
 
 	get subscriptionName() {
 		return `stream-${this.name}`;
 	}
 
-	allowRead(fn) {
+	allowRead(eventName, fn) {
+		if (fn === undefined) {
+			fn = eventName;
+			eventName = '__all__';
+		}
+
 		if (typeof fn === 'function') {
-			this._allowRead = fn;
+			return this._allowRead[eventName] = fn;
+		}
+
+		if (fn === 'all' || fn === true) {
+			return this._allowRead[eventName] = function() {return true;};
+		}
+
+		if (fn === 'none' || fn === false) {
+			return this._allowRead[eventName] = function() {return false;};
+		}
+
+		if (fn === 'logged') {
+			return this._allowRead[eventName] = function() {return Boolean(this.userId);};
 		}
 	}
 
-	allowWrite(fn) {
-		if (typeof fn === 'function') {
-			this._allowWrite = fn;
+	allowWrite(eventName, fn) {
+		if (fn === undefined) {
+			fn = eventName;
+			eventName = '__all__';
 		}
+
+		if (typeof fn === 'function') {
+			return this._allowWrite[eventName] = fn;
+		}
+
+		if (fn === 'all' || fn === true) {
+			return this._allowWrite[eventName] = function() {return true;};
+		}
+
+		if (fn === 'none' || fn === false) {
+			return this._allowWrite[eventName] = function() {return false;};
+		}
+
+		if (fn === 'logged') {
+			return this._allowWrite[eventName] = function() {return Boolean(this.userId);};
+		}
+	}
+
+	isReadAllowed(scope, eventName) {
+		if (this._allowRead[eventName]) {
+			return this._allowRead[eventName].call(scope, eventName);
+		}
+
+		return this._allowRead['__all__'].call(scope, eventName);
+	}
+
+	isWriteAllowed(scope, eventName, args) {
+		if (this._allowWrite[eventName]) {
+			return this._allowWrite[eventName].call(scope, eventName, ...args);
+		}
+
+		return this._allowWrite['__all__'].call(scope, eventName, ...args);
 	}
 
 	addSubscription(subscription, eventName) {
@@ -119,7 +167,7 @@ Meteor.Streamer = class Streamer extends EV {
 	iniPublication() {
 		const stream = this;
 		Meteor.publish(this.subscriptionName, function(eventName, useCollection) {
-			if (stream._allowRead.call(this, eventName) !== true) {
+			if (stream.isReadAllowed(this, eventName) !== true) {
 				this.stop();
 				return;
 			}
@@ -153,7 +201,7 @@ Meteor.Streamer = class Streamer extends EV {
 		method[this.subscriptionName] = function(eventName, ...args) {
 			this.unblock();
 
-			if (stream._allowWrite.call(this, eventName, ...args) !== true) {
+			if (stream.isWriteAllowed(this, eventName, args) !== true) {
 				return;
 			}
 
