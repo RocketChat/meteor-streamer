@@ -1,14 +1,11 @@
-/* globals streamer:true */
-/* exported streamer */
-
-streamer = new Meteor.Streamer('chat');
+const streamer = new Meteor.Streamer('test', {retransmitToSelf: true});
 
 streamer.transform('sum', function(a, b) {
 	return a + b;
 });
 
 streamer.transform('logged', function() {
-	return !!this.userId;
+	return Boolean(this.userId);
 });
 
 streamer.transform('userId', function() {
@@ -16,11 +13,11 @@ streamer.transform('userId', function() {
 });
 
 streamer.transform('only-logged', function() {
-	return !!Meteor.userId();
+	return Boolean(Meteor.userId());
 });
 
 streamer.transform('only-logged2', function() {
-	return !!this.userId;
+	return Boolean(this.userId);
 });
 
 streamer.allowRead('all');

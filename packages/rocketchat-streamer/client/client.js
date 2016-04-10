@@ -22,7 +22,7 @@ Meteor.StreamerCentral = new StreamerCentral;
 
 
 Meteor.Streamer = class Streamer extends EV {
-	constructor(name, {useCollection} = {useCollection: false}) {
+	constructor(name, {useCollection = false} = {}) {
 		if (Meteor.StreamerCentral.instances[name]) {
 			console.warn('Streamer instance already exists:', name);
 			return Meteor.StreamerCentral.instances[name];
@@ -48,8 +48,26 @@ Meteor.Streamer = class Streamer extends EV {
 		});
 	}
 
+	get name() {
+		return this._name;
+	}
+
+	set name(name) {
+		check(name, String);
+		this._name = name;
+	}
+
 	get subscriptionName() {
 		return `stream-${this.name}`;
+	}
+
+	get useCollection() {
+		return this._useCollection;
+	}
+
+	set useCollection(useCollection) {
+		check(useCollection, Boolean);
+		this._useCollection = useCollection;
 	}
 
 	unsubscribe(eventName) {

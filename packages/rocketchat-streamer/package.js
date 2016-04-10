@@ -7,6 +7,7 @@ Package.describe({
 Package.on_use(function (api) {
 	api.use('ddp-common');
 	api.use('ecmascript');
+	api.use('check');
 
 	api.addFiles('lib/ev.js');
 

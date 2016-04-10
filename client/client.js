@@ -1,7 +1,4 @@
-/* globals test, streamer:true */
-/* exported streamer, test */
-
-streamer = new Meteor.Streamer('chat');
+const streamer = new Meteor.Streamer('test');
 let testResult = [];
 const testResultReactive = new ReactiveVar();
 

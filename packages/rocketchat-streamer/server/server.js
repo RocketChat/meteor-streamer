@@ -10,7 +10,7 @@ Meteor.StreamerCentral = new StreamerCentral;
 
 
 Meteor.Streamer = class Streamer extends EV {
-	constructor(name, {retransmission} = {retransmission: true}) {
+	constructor(name, {retransmit = true, retransmitToSelf = false} = {}) {
 		if (Meteor.StreamerCentral.instances[name]) {
 			console.warn('Streamer instance already exists:', name);
 			return Meteor.StreamerCentral.instances[name];
@@ -21,7 +21,8 @@ Meteor.Streamer = class Streamer extends EV {
 		Meteor.StreamerCentral.instances[name] = this;
 
 		this.name = name;
-		this.retransmission = retransmission;
+		this.retransmit = retransmit;
+		this.retransmitToSelf = retransmitToSelf;
 
 		this.subscriptions = [];
 		this.subscriptionsByEventName = {};
@@ -37,8 +38,35 @@ Meteor.Streamer = class Streamer extends EV {
 		this.allowWrite('none');
 	}
 
+	get name() {
+		return this._name;
+	}
+
+	set name(name) {
+		check(name, String);
+		this._name = name;
+	}
+
 	get subscriptionName() {
 		return `stream-${this.name}`;
+	}
+
+	get retransmit() {
+		return this._retransmit;
+	}
+
+	set retransmit(retransmit) {
+		check(retransmit, Boolean);
+		this._retransmit = retransmit;
+	}
+
+	get retransmitToSelf() {
+		return this._retransmitToSelf;
+	}
+
+	set retransmitToSelf(retransmitToSelf) {
+		check(retransmitToSelf, Boolean);
+		this._retransmitToSelf = retransmitToSelf;
 	}
 
 	allowRead(eventName, fn) {
@@ -216,7 +244,7 @@ Meteor.Streamer = class Streamer extends EV {
 
 			super.emitWithScope(eventName, methodScope, ...args);
 
-			if (stream.retransmission === true) {
+			if (stream.retransmit === true) {
 				stream._emit(eventName, args, this.connection);
 			}
 		};
@@ -235,7 +263,7 @@ Meteor.Streamer = class Streamer extends EV {
 		}
 
 		subscriptions.forEach((subscription) => {
-			if (origin && origin === subscription.subscription.connection) {
+			if (this.retransmitToSelf === false && origin && origin === subscription.subscription.connection) {
 				return;
 			}
 
