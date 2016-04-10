@@ -16,8 +16,8 @@ function addTestResult(text, ok) {
 }
 
 function call(eventName, params, paramsReply) {
-	radio.once(`${eventName}-reply`, (serverReply, ...args) => {
-		addTestResult(eventName + ' - ' + JSON.stringify(paramsReply), serverReply === 'server-reply' && JSON.stringify(args) === JSON.stringify(paramsReply));
+	radio.once(eventName, (...args) => {
+		addTestResult(eventName + ' - ' + JSON.stringify(args), JSON.stringify(args) === JSON.stringify(paramsReply));
 	});
 	radio.emit(eventName, ...params);
 }

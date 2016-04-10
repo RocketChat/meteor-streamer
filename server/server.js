@@ -3,35 +3,26 @@
 
 radio = new Meteor.Radio('chat');
 
-function onAndReply(eventName, cb) {
-	radio.on(eventName, function(...args) {
-		radio.emit(eventName+'-reply', 'server-reply', ...cb.apply(this, args));
-	});
-}
-
-onAndReply('hi', function(...args) {
-	return args;
-});
-
-onAndReply('sum', function(a, b) {
+radio.transform('sum', function(a, b) {
 	return a + b;
 });
 
-onAndReply('logged', function() {
+radio.transform('logged', function() {
 	return !!this.userId;
 });
 
-onAndReply('userId', function() {
+radio.transform('userId', function() {
 	return this.userId;
 });
 
-onAndReply('only-logged', function() {
+radio.transform('only-logged', function() {
+	return !!Meteor.userId();
+});
+
+radio.transform('only-logged2', function() {
 	return !!this.userId;
 });
 
-onAndReply('only-logged2', function() {
-	return !!this.userId;
-});
 
 radio.allowRead(function(eventName) {
 	if (eventName === 'only-logged-reply') {

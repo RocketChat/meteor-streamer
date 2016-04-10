@@ -10,7 +10,7 @@ Meteor.RadioStation = new RadioStation;
 
 
 Meteor.Radio = class Radio extends EV {
-	constructor(name) {
+	constructor(name, {retransmission} = {retransmission: true}) {
 		if (Meteor.RadioStation.instances[name]) {
 			console.warn('Radio instance already exists:', name);
 			return Meteor.RadioStation.instances[name];
@@ -21,8 +21,11 @@ Meteor.Radio = class Radio extends EV {
 		Meteor.RadioStation.instances[name] = this;
 
 		this.name = name;
+		this.retransmission = retransmission;
+
 		this.subscriptions = [];
 		this.subscriptionsByEventName = {};
+		this.transformers = {};
 
 		this.iniPublication();
 		this.initMethod();
@@ -76,6 +79,43 @@ Meteor.Radio = class Radio extends EV {
 		}
 	}
 
+	transform(eventName, fn) {
+		if (typeof eventName === 'function') {
+			fn = eventName;
+			eventName = '__all__';
+		}
+
+		if (!this.transformers[eventName]) {
+			this.transformers[eventName] = [];
+		}
+
+		this.transformers[eventName].push(fn);
+	}
+
+	applyTransformers(methodScope, eventName, args) {
+		if (this.transformers['__all__']) {
+			this.transformers['__all__'].forEach((transform) => {
+				args = transform.call(methodScope, eventName, args);
+				methodScope.tranformed = true;
+				if (!Array.isArray(args)) {
+					args = [args];
+				}
+			});
+		}
+
+		if (this.transformers[eventName]) {
+			this.transformers[eventName].forEach((transform) => {
+				args = transform.call(methodScope, ...args);
+				methodScope.tranformed = true;
+				if (!Array.isArray(args)) {
+					args = [args];
+				}
+			});
+		}
+
+		return args;
+	}
+
 	iniPublication() {
 		const stream = this;
 		Meteor.publish(this.subscriptionName, function(eventName, useCollection) {
@@ -117,7 +157,20 @@ Meteor.Radio = class Radio extends EV {
 				return;
 			}
 
-			super.emitWithScope(eventName, this, ...args);
+			const methodScope = {
+				userId: this.userId,
+				connection: this.connection,
+				originalParams: args,
+				tranformed: false
+			};
+
+			args = stream.applyTransformers(methodScope, eventName, args);
+
+			super.emitWithScope(eventName, methodScope, ...args);
+
+			if (stream.retransmission === true) {
+				stream.emit(eventName, ...args);
+			}
 		};
 
 		try {
