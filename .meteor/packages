@@ -18,5 +18,7 @@ ecmascript              # Enable ECMAScript2015+ syntax in app code
 
 accounts-password
 reactive-var
+check
+random
 arunoda:streams
 rocketchat:streamer
