@@ -1,6 +1,6 @@
 /* globals DDPCommon, EV */
 
-class RadioStation extends EV {
+class StreamerCentral extends EV {
 	constructor() {
 		super();
 
@@ -18,25 +18,25 @@ class RadioStation extends EV {
 	}
 }
 
-Meteor.RadioStation = new RadioStation;
+Meteor.StreamerCentral = new StreamerCentral;
 
 
-Meteor.Radio = class Radio extends EV {
+Meteor.Streamer = class Streamer extends EV {
 	constructor(name, {useCollection} = {useCollection: false}) {
-		if (Meteor.RadioStation.instances[name]) {
-			console.warn('Radio instance already exists:', name);
-			return Meteor.RadioStation.instances[name];
+		if (Meteor.StreamerCentral.instances[name]) {
+			console.warn('Streamer instance already exists:', name);
+			return Meteor.StreamerCentral.instances[name];
 		}
 
 		super();
 
-		Meteor.RadioStation.instances[name] = this;
+		Meteor.StreamerCentral.instances[name] = this;
 
 		this.name = name;
 		this.useCollection = useCollection;
 		this.subscriptions = {};
 
-		Meteor.RadioStation.on(this.subscriptionName, (eventName, ...args) => {
+		Meteor.StreamerCentral.on(this.subscriptionName, (eventName, ...args) => {
 			if (this.subscriptions[eventName]) {
 				this.subscriptions[eventName].lastMessage = args;
 				super.emit.call(this, eventName, ...args);

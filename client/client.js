@@ -1,7 +1,7 @@
-/* globals test, radio:true */
-/* exported radio, test */
+/* globals test, streamer:true */
+/* exported streamer, test */
 
-radio = new Meteor.Radio('chat');
+streamer = new Meteor.Streamer('chat');
 let testResult = [];
 const testResultReactive = new ReactiveVar();
 
@@ -16,10 +16,10 @@ function addTestResult(text, ok) {
 }
 
 function call(eventName, params, paramsReply) {
-	radio.once(eventName, (...args) => {
+	streamer.once(eventName, (...args) => {
 		addTestResult(eventName + ' - ' + JSON.stringify(args), JSON.stringify(args) === JSON.stringify(paramsReply));
 	});
-	radio.emit(eventName, ...params);
+	streamer.emit(eventName, ...params);
 }
 
 function test() {
@@ -46,6 +46,6 @@ Template.body.helpers({
 
 setTimeout(test, 1000);
 
-radio.onReconnect(function() {
+streamer.onReconnect(function() {
 	test();
 });

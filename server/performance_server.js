@@ -1,4 +1,4 @@
-Meteor.radio = new Meteor.Radio('performance-rocket');
+Meteor.streamer = new Meteor.Streamer('performance-rocket');
 Meteor.stream = new Meteor.Stream('performance-arunoda');
 
 Meteor.stream.permissions.read(function() {
@@ -16,8 +16,8 @@ Meteor.methods({
 
 	'register-rocket'(n) {
 		for (let i = 1; i <= n; i++) {
-			Meteor.radio.on(`event-${i}`, function(value, obj) {
-				Meteor.radio.emit(`event-${i}-reply`, value, obj);
+			Meteor.streamer.on(`event-${i}`, function(value, obj) {
+				Meteor.streamer.emit(`event-${i}-reply`, value, obj);
 			});
 		}
 	},

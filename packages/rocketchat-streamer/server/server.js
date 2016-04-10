@@ -1,24 +1,24 @@
 /* globals EV */
 
-class RadioStation {
+class StreamerCentral {
 	constructor() {
 		this.instances = {};
 	}
 }
 
-Meteor.RadioStation = new RadioStation;
+Meteor.StreamerCentral = new StreamerCentral;
 
 
-Meteor.Radio = class Radio extends EV {
+Meteor.Streamer = class Streamer extends EV {
 	constructor(name, {retransmission} = {retransmission: true}) {
-		if (Meteor.RadioStation.instances[name]) {
-			console.warn('Radio instance already exists:', name);
-			return Meteor.RadioStation.instances[name];
+		if (Meteor.StreamerCentral.instances[name]) {
+			console.warn('Streamer instance already exists:', name);
+			return Meteor.StreamerCentral.instances[name];
 		}
 
 		super();
 
-		Meteor.RadioStation.instances[name] = this;
+		Meteor.StreamerCentral.instances[name] = this;
 
 		this.name = name;
 		this.retransmission = retransmission;

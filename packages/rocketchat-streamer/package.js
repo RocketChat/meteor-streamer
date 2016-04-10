@@ -1,5 +1,5 @@
 Package.describe({
-	name: 'rocketchat:radio',
+	name: 'rocketchat:streamer',
 	version: '0.1.0',
 	summary: 'DB less realtime communication for meteor'
 });
@@ -14,5 +14,5 @@ Package.on_use(function (api) {
 
 	api.addFiles('server/server.js', 'server');
 
-	api.export('Radio');
+	api.export('Streamer');
 });

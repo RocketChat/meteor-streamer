@@ -2,11 +2,11 @@ function memoryReadle(value) {
 	return Math.round(value / 1024 / 102.4) / 10;
 }
 
-Meteor.testRocket = function(e=10, m=2000) {
+Meteor.testRocket = function(e=2000, m=10) {
 	Meteor.call('memory-sample', function(err, memoryStart) {
 		Meteor.call('register-rocket', e, function() {
 
-			Meteor.radio = Meteor.radio || new Meteor.Radio('performance-rocket');
+			Meteor.streamer = Meteor.streamer || new Meteor.Streamer('performance-rocket');
 
 			const startTime = new Date();
 			let success = 0;
@@ -20,7 +20,7 @@ Meteor.testRocket = function(e=10, m=2000) {
 			};
 
 			for (let i = 1; i <= e; i++) {
-				Meteor.radio.on(`event-${i}-reply`, function(value, obj) {
+				Meteor.streamer.on(`event-${i}-reply`, function(value, obj) {
 					if (value === i && obj) {
 						success++;
 					}
@@ -35,14 +35,14 @@ Meteor.testRocket = function(e=10, m=2000) {
 
 			for (let i = 1; i <= e; i++) {
 				for (let j = 1; j <= m; j++) {
-					Meteor.radio.emit(`event-${i}`, i, __meteor_runtime_config__);
+					Meteor.streamer.emit(`event-${i}`, i, __meteor_runtime_config__);
 				}
 			}
 		});
 	});
 };
 
-Meteor.testArunoda = function(e=10, m=2000) {
+Meteor.testArunoda = function(e=2000, m=10) {
 	Meteor.call('memory-sample', function(err, memoryStart) {
 		Meteor.call('register-arunoda', e, function() {
 
