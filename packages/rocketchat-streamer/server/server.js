@@ -217,7 +217,7 @@ Meteor.Streamer = class Streamer extends EV {
 			super.emitWithScope(eventName, methodScope, ...args);
 
 			if (stream.retransmission === true) {
-				stream.emit(eventName, ...args);
+				stream._emit(eventName, args, this.connection);
 			}
 		};
 
@@ -228,17 +228,25 @@ Meteor.Streamer = class Streamer extends EV {
 		}
 	}
 
-	emit(eventName, ...args) {
+	_emit(eventName, args, origin) {
 		const subscriptions = this.subscriptionsByEventName[eventName];
 		if (!Array.isArray(subscriptions)) {
 			return;
 		}
 
 		subscriptions.forEach((subscription) => {
+			if (origin && origin === subscription.subscription.connection) {
+				return;
+			}
+
 			subscription.subscription._session.sendChanged(this.subscriptionName, 'id', {
 				eventName: eventName,
 				args: args
 			});
 		});
+	}
+
+	emit(eventName, ...args) {
+		this._emit(eventName, args);
 	}
 };
