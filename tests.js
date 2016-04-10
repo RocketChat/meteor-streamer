@@ -1,28 +1,18 @@
 const streamer = new Meteor.Streamer('test', {retransmitToSelf: true});
 
 if (Meteor.isClient) {
-	let testResult = [];
-	const testResultReactive = new ReactiveVar();
-
-	const addTestResult = (text, ok) => {
-		testResult.push({
-			type: ok === true ? 'success' : 'failure',
-			sign: ok === true ? '√' : 'X',
-			text: text
-		});
-
-		testResultReactive.set(testResult);
-	};
-
 	const call = (eventName, params, paramsReply) => {
 		streamer.once(eventName, (...args) => {
-			addTestResult(eventName + ' - ' + JSON.stringify(args), JSON.stringify(args) === JSON.stringify(paramsReply));
+			if (JSON.stringify(args) === JSON.stringify(paramsReply)) {
+				console.log('√', eventName, args);
+			} else {
+				console.warn('X', eventName, args);
+			}
 		});
 		streamer.emit(eventName, ...params);
 	};
 
-	const test = () => {
-		testResult = [];
+	window.test = () => {
 		call('hi', [1, 2, 3], [1, 2, 3]);
 		call('sum', [2, 3], [5]);
 		call('logged', [], [!!Meteor.userId()]);
@@ -31,22 +21,10 @@ if (Meteor.isClient) {
 		call('userId', [], [Meteor.userId()]);
 	};
 
-	Template.body.events({
-		'click .start-test'() {
-			test();
-		}
-	});
-
-	Template.body.helpers({
-		testResult() {
-			return testResultReactive.get();
-		}
-	});
-
-	setTimeout(test, 1000);
+	setTimeout(window.test, 1000);
 
 	streamer.onReconnect(function() {
-		test();
+		window.test();
 	});
 }
 
