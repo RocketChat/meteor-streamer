@@ -74,15 +74,81 @@ new Meteor.Streamer(name, [options])
 
 #### Server
 ```javascript
-new Meteor.Streamer(name, [options])
+const streamer = new Meteor.Streamer(name, [options]);
 ```
 - **name - String** REQUIRED Unique name to identify stream between server and client
 - **options - Object** OPTIONAL
   - **retransmit - Boolean** Set to false to prevent streaming "client to client" `default true`
   - **retransmitToSelf - Boolean** Set to true if you want to receive messages you've sent via _retransmit_ `default false`
 
-### Permissions
-TODO
+### Permissions (Server only)
+#### .allowRead('eventName', 'all')
+```javascript
+streamer.allowRead([eventName], permission);
+```
+- **eventName - String** OPTIONAL The event name to apply permissions, if not informed will apply the permission for all events
+- **permission - Function/String** REQUIRED
+  - **Function(eventName)** The function should return true to allow read
+    - Param **eventName** The event name, useful when use one function to manage permissions for all events
+    - Scope **this.userId** The id of the logged user
+    - Scope **this.connection** The connection between client and server
+  - **String** There are shortcuts for permissions
+    - **all** Allow read for everyone
+    - **none** Deny read for everyone
+    - **logged** Allow read for logged users
+
+```javascript
+//Examples
+
+streamer.allowRead('all'); // Everyone can read all events
+
+streamer.allowRead('chat', 'logged'); // Only logged users can read chat events
+
+streamer.allowRead('notifications', function() { // Only admin users can read notificaiton events
+  if (this.userId) {
+    const user = Meteor.users.findOne(this.userId);
+    if (user && user.admin === true) {
+      return true;
+    }
+  }
+  
+  return false;
+});
+```
+
+#### .allowWrite('eventName', 'all')
+```javascript
+streamer.allowWrite([eventName], permission);
+```
+- **eventName - String** OPTIONAL The event name to apply permissions, if not informed will apply the permission for all events
+- **permission - Function/String** REQUIRED
+  - **Function(eventName, ...args)** The function should return true to allow write
+    - Param **eventName** The event name, useful when use one function to manage permissions for all events
+    - Scope **this.userId** The id of the logged user
+    - Scope **this.connection** The connection between client and server
+  - **String** There are shortcuts for permissions
+    - **all** Allow write for everyone
+    - **none** Deny write for everyone
+    - **logged** Allow write for logged users
+
+```javascript
+//Examples
+
+streamer.allowWrite('all'); // Everyone can write all events
+
+streamer.allowWrite('chat', 'logged'); // Only logged users can write chat events
+
+streamer.allowWrite('notifications', function(eventName, type) { // Only admin users can write notificaiton events
+  if (this.userId && type === 'new-message') {                   // and only if the first param is 'new-message'
+    const user = Meteor.users.findOne(this.userId);
+    if (user && user.admin === true) {
+      return true;
+    }
+  }
+  
+  return false;
+});
+```
 
 ### Compatibility mode
 TODO
