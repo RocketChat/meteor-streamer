@@ -2,7 +2,7 @@
 2 way communication over DDP with better performance.
 
 ## Installation
-TODO
+`meteor add rocketchat:streamer`
 
 ## Why
 DDP subscriptions keeps track of all data each client has, it's called MergeBox, this is a lighter solution.
@@ -17,7 +17,7 @@ You can send a lot of data without performance problems, like notifications.
 ## Downsides
 Since the library don't keep track of data, you will not receive lost data while offline after reconnection. But we have an event to notify you on reconnections passing the latest record received so you can call a method to verify and get the missing data.
 
-TODO single server only
+<!--TODO single server only-->
 
 ## Compatibility
 Since **streamer** is based on DDP, we use subscriptions and methods to send data, it's 100% compatible with all DDP clients, more details below.
@@ -187,5 +187,5 @@ streamer.allowWrite('notifications', function(eventName, type) { // Only admin u
 });
 ```
 
-### Compatibility mode
-TODO
+<!--### Compatibility mode-->
+<!--TODO-->
