@@ -38,13 +38,46 @@ Since **streamer** is based on DDP, we use subscriptions and methods to send dat
 
 
 ## How to use
-TODO Basic Usage
+A simple console chat
 
-### Client side
-TODO
+```javascript
+const streamer = new Meteor.Streamer('chat');
 
-### Server side
-TODO
+if(Meteor.isClient) {
+  sendMessage = function(message) {
+    streamer.emit('message', message);
+    console.log('me: ' + message);
+  };
+
+  streamer.on('message', function(message) {
+    console.log('user: ' + message);
+  });
+}
+
+if (Meteor.isServer) {
+  streamer.allowRead('all');
+  streamer.allowWrite('all');
+}
+```
+
+Now you can open 2 browser tabs/windows and chat using `sendMessage("text")` at your browser's console
+Every message will travel from your client to server and retransmited to all other clients.
+
+### new Meteor.Streamer('name')
+#### Client
+Options
+- **useCollection [Boolean]** Set to `true` to enable the compatible mode `default false`
+```javascript
+new Meteor.Streamer(name, [options])
+```
+
+#### Client
+Options
+- **retransmit [Boolean]** Set to false to prevent streaming "client to client" `default true`
+- **retransmitToSelf [Boolean]** Set to true if you want to receive messages you've sent via _retransmit_ `default false`
+```javascript
+new Meteor.Streamer(name, [options])
+```
 
 ### Permissions
 TODO
