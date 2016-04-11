@@ -63,7 +63,7 @@ if (Meteor.isServer) {
 Now you can open 2 browser tabs/windows and chat using `sendMessage("text")` at your browser's console
 Every message will travel from your client to server and retransmited to all other clients.
 
-### new Meteor.Streamer('name')
+## new Meteor.Streamer('name')
 #### Client
 ```javascript
 new Meteor.Streamer(name, [options])
@@ -81,8 +81,45 @@ const streamer = new Meteor.Streamer(name, [options]);
   - **retransmit - Boolean** Set to false to prevent streaming "client to client" `default true`
   - **retransmitToSelf - Boolean** Set to true if you want to receive messages you've sent via _retransmit_ `default false`
 
-### Permissions (Server only)
-#### .allowRead('eventName', 'all')
+## .emit('eventName', ...args)
+With `emit` you send data from client to server or from server to clients.
+```javascript
+streamer.emit(eventName, arg1, arg2, ...);
+```
+- **eventName - String** REQUIRED The event name to send data
+- **args - Mixed** OPTIONAL You can pass 0 or more arguments to your event
+
+If you emit an event from client you will receive that event on server and if you emit an event on your server you will receive the event in all connected clients.
+
+If `retransmit` is enabled, you will receive the event emited on client on your server and on all other connected clients.
+
+**The default permission deny all comunication, you should define a new permission! See allowRead and allowWrite bellow**
+
+```javascript
+// Example
+streamer.emit('message', {text: 'My new message', user: 'User1'}); // Send one object
+streamer.emit('message', 'My new message', 'User1'); // Send 2 strings
+streamer.emit('message'); // Just call the event without params
+```
+
+## .on('eventName', fn)
+With `on` you listen for data sent from client to server or from server to clients.
+```javascript
+streamer.on(eventName, fn);
+```
+- **eventName - String** REQUIRED The event name to receive data
+- **fn - Function** REQUIRED Function to receive and process the data for the event
+
+**The default permission deny all comunication, you should define a new permission! See allowRead and allowWrite bellow**
+
+```javascript
+// Example
+streamer.on('message', function(message) {
+  console.log(message);
+});
+```
+
+## .allowRead('eventName', 'all') (Server only)
 ```javascript
 streamer.allowRead([eventName], permission);
 ```
@@ -116,7 +153,7 @@ streamer.allowRead('notifications', function() { // Only admin users can read no
 });
 ```
 
-#### .allowWrite('eventName', 'all')
+## .allowWrite('eventName', 'all') (Server only)
 ```javascript
 streamer.allowWrite([eventName], permission);
 ```
