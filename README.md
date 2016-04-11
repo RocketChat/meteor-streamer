@@ -65,19 +65,19 @@ Every message will travel from your client to server and retransmited to all oth
 
 ### new Meteor.Streamer('name')
 #### Client
-Options
-- **useCollection [Boolean]** Set to `true` to enable the compatible mode `default false`
 ```javascript
 new Meteor.Streamer(name, [options])
 ```
+- options
+  - **useCollection [Boolean]** Set to `true` to enable the compatible mode `default false`
 
 #### Client
-Options
-- **retransmit [Boolean]** Set to false to prevent streaming "client to client" `default true`
-- **retransmitToSelf [Boolean]** Set to true if you want to receive messages you've sent via _retransmit_ `default false`
 ```javascript
 new Meteor.Streamer(name, [options])
 ```
+- options
+  - **retransmit [Boolean]** Set to false to prevent streaming "client to client" `default true`
+  - **retransmitToSelf [Boolean]** Set to true if you want to receive messages you've sent via _retransmit_ `default false`
 
 ### Permissions
 TODO
