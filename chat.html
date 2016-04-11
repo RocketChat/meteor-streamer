@@ -1,0 +1,78 @@
+<head>
+	<title>streams</title>
+
+	<style type="text/css">
+		html {
+			height: 100%;
+		}
+
+		body {
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			padding: 0px;
+			margin: 0px;
+			line-height: 1.3em;
+			font-family: helvetica;
+		}
+
+		.top-bar {
+			padding: 10px 5px;
+			border-bottom: 1px solid #ddd;
+		}
+
+		.messages {
+			background-color: #f1f1f1;
+			flex-grow: 1;
+			padding: 10px 5px;
+		}
+
+		.message {
+			display: inline-block;
+			border-radius: 15px;
+			color: white;
+			padding: 5px 10px;
+			min-width: 200px;
+		}
+
+		.message-line.user .message {
+			background-color: #7979EF;
+		}
+
+		.message-line.self {
+			text-align: right;
+		}
+
+		.message-line.self .message {
+			background-color: #c3c3c3;
+		}
+
+		input {
+			line-height: 1em;
+			font-size: 1.2em;
+			padding: 10px 15px;
+			border: 1px solid #ddd;
+			border-width: 1px 0 0 0;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="top-bar">
+		{{> loginButtons}}
+	</div>
+	<div class="messages">
+		{{#each messages}}
+			<div class="message-line {{type}}">
+				<div class="message">
+					{{#if user}}
+						<b class="username">{{user}}</b>
+						<br/>
+					{{/if}}
+					{{text}}
+				</div>
+			</div>
+		{{/each}}
+	</div>
+	<input type="text" placeholder="Send a new message" />
+</body>
