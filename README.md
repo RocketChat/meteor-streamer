@@ -2,7 +2,9 @@
 2 way communication over DDP with better performance.
 
 ## Installation
-`meteor add rocketchat:streamer`
+```shell
+meteor add rocketchat:streamer
+```
 
 ## Why
 DDP subscriptions keeps track of all data each client has, it's called MergeBox, this is a lighter solution.
