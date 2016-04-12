@@ -1,4 +1,10 @@
 /* globals DDPCommon, EV */
+/* eslint-disable new-cap */
+
+const NonEmptyString = Match.Where(function (x) {
+	check(x, String);
+	return x.length > 0;
+});
 
 class StreamerCentral extends EV {
 	constructor() {
@@ -100,6 +106,9 @@ Meteor.Streamer = class Streamer extends EV {
 	}
 
 	once(eventName, callback) {
+		check(eventName, NonEmptyString);
+		check(callback, Function);
+
 		if (!this.subscriptions[eventName]) {
 			this.subscriptions[eventName] = {
 				subscription: this.subscribe(eventName)
@@ -110,6 +119,9 @@ Meteor.Streamer = class Streamer extends EV {
 	}
 
 	on(eventName, callback) {
+		check(eventName, NonEmptyString);
+		check(callback, Function);
+
 		if (!this.subscriptions[eventName]) {
 			this.subscriptions[eventName] = {
 				subscription: this.subscribe(eventName)
