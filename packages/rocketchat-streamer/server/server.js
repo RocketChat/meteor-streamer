@@ -205,6 +205,11 @@ Meteor.Streamer = class Streamer extends EV {
 	iniPublication() {
 		const stream = this;
 		Meteor.publish(this.subscriptionName, function(eventName, useCollection) {
+			if (typeof eventName !== 'string' || eventName.length === 0) {
+				this.stop();
+				return;
+			}
+
 			if (stream.isReadAllowed(this, eventName) !== true) {
 				this.stop();
 				return;
