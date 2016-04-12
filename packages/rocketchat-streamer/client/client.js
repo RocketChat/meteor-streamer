@@ -75,11 +75,15 @@ Meteor.Streamer = class Streamer extends EV {
 	}
 
 	subscribe(eventName) {
-		return Meteor.subscribe(this.subscriptionName, eventName, this.useCollection, {
-			onStop: () => {
-				this.unsubscribe(eventName);
-			}
+		let subscribe;
+		Tracker.nonreactive(() => {
+			subscribe = Meteor.subscribe(this.subscriptionName, eventName, this.useCollection, {
+				onStop: () => {
+					this.unsubscribe(eventName);
+				}
+			});
 		});
+		return subscribe;
 	}
 
 	onReconnect(fn) {
