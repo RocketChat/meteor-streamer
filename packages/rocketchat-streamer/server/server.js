@@ -79,6 +79,10 @@ Meteor.Streamer = class Streamer extends EV {
 			return this._allowRead[eventName] = fn;
 		}
 
+		if (typeof fn === 'string' && ['all', 'none', 'logged'].indexOf(fn) === -1) {
+			console.error(`allowRead shortcut '${fn}' is invalid`);
+		}
+
 		if (fn === 'all' || fn === true) {
 			return this._allowRead[eventName] = function() {return true;};
 		}
@@ -100,6 +104,10 @@ Meteor.Streamer = class Streamer extends EV {
 
 		if (typeof fn === 'function') {
 			return this._allowWrite[eventName] = fn;
+		}
+
+		if (typeof fn === 'string' && ['all', 'none', 'logged'].indexOf(fn) === -1) {
+			console.error(`allowWrite shortcut '${fn}' is invalid`);
 		}
 
 		if (fn === 'all' || fn === true) {
