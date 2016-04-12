@@ -1,6 +1,6 @@
 Package.describe({
 	name: 'rocketchat:streamer',
-	version: '0.3.1',
+	version: '0.3.2',
 	summary: 'DB less realtime communication for meteor'
 });
 
