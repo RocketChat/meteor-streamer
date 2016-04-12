@@ -1,7 +1,9 @@
 /* globals EV */
 
-class StreamerCentral {
+class StreamerCentral extends EV {
 	constructor() {
+		super();
+
 		this.instances = {};
 	}
 }
@@ -253,7 +255,7 @@ Meteor.Streamer = class Streamer extends EV {
 			super.emitWithScope(eventName, methodScope, ...args);
 
 			if (stream.retransmit === true) {
-				stream._emit(eventName, args, this.connection);
+				stream._emit(eventName, args, this.connection, true);
 			}
 		};
 
@@ -264,7 +266,11 @@ Meteor.Streamer = class Streamer extends EV {
 		}
 	}
 
-	_emit(eventName, args, origin) {
+	_emit(eventName, args, origin, broadcast) {
+		if (broadcast === true) {
+			Meteor.StreamerCentral.emit('broadcast', this.name, eventName, args);
+		}
+
 		const subscriptions = this.subscriptionsByEventName[eventName];
 		if (!Array.isArray(subscriptions)) {
 			return;
@@ -284,5 +290,9 @@ Meteor.Streamer = class Streamer extends EV {
 
 	emit(eventName, ...args) {
 		this._emit(eventName, args);
+	}
+
+	emitAndBroadcast(eventName, ...args) {
+		this._emit(eventName, args, undefined, true);
 	}
 };
