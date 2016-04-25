@@ -205,7 +205,10 @@ Meteor.Streamer = class Streamer extends EV {
 	iniPublication() {
 		const stream = this;
 		Meteor.publish(this.subscriptionName, function(eventName, useCollection) {
-			if (typeof eventName !== 'string' || eventName.length === 0) {
+			check(eventName, String);
+			check(useCollection, Match.Optional(Boolean));
+
+			if (eventName.length === 0) {
 				this.stop();
 				return;
 			}
@@ -242,6 +245,9 @@ Meteor.Streamer = class Streamer extends EV {
 		const method = {};
 
 		method[this.subscriptionName] = function(eventName, ...args) {
+			check(eventName, String);
+			check(args, Array);
+
 			this.unblock();
 
 			if (stream.isWriteAllowed(this, eventName, args) !== true) {
