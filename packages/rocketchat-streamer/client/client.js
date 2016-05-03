@@ -25,7 +25,6 @@ class StreamerCentral extends EV {
 
 Meteor.StreamerCentral = new StreamerCentral;
 
-
 Meteor.Streamer = class Streamer extends EV {
 	constructor(name, {useCollection = false} = {}) {
 		if (Meteor.StreamerCentral.instances[name]) {
@@ -75,7 +74,23 @@ Meteor.Streamer = class Streamer extends EV {
 		this._useCollection = useCollection;
 	}
 
+	stop(eventName) {
+		if (this.subscriptions[eventName] && this.subscriptions[eventName].subscription) {
+			this.subscriptions[eventName].subscription.stop();
+		}
+		this.unsubscribe(eventName);
+	}
+
+	stopAll() {
+		for (let eventName in this.subscriptions) {
+			if (this.subscriptions.hasOwnProperty(eventName)) {
+				this.stop(eventName);
+			}
+		}
+	}
+
 	unsubscribe(eventName) {
+		this.removeAllListeners(eventName);
 		delete this.subscriptions[eventName];
 	}
 
