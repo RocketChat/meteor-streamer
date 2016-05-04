@@ -263,7 +263,7 @@ Meteor.Streamer = class Streamer extends EV {
 
 			args = stream.applyTransformers(methodScope, eventName, args);
 
-			super.emitWithScope(eventName, methodScope, ...args);
+			stream.emitWithScope(eventName, methodScope, ...args);
 
 			if (stream.retransmit === true) {
 				stream._emit(eventName, args, this.connection, true);

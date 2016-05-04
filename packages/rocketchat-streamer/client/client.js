@@ -129,7 +129,7 @@ Meteor.Streamer = class Streamer extends EV {
 			};
 		}
 
-		super(eventName, callback);
+		super.once(eventName, callback);
 	}
 
 	on(eventName, callback) {
@@ -142,7 +142,7 @@ Meteor.Streamer = class Streamer extends EV {
 			};
 		}
 
-		super(eventName, callback);
+		super.on(eventName, callback);
 	}
 
 	emit(...args) {
