@@ -26,10 +26,10 @@ Since **streamer** is based on DDP, we use subscriptions and methods to send dat
 
 ## Advantages over Arunoda's stream library
 - Faster and use less memmory
-  - For 2000 events and 10 mensages (40 thousand operations - send and reply)
+  - For 2000 events and 10 messages (40 thousand operations - send and reply)
     - rocketchat:streamer: ~34 seconds, increase of ~68mb of RAM
     - arunoda:meteor-stream: ~41 seconds, increase of ~76mb of RAM
-  - For 10 events and 2000 mensages (40 thousand operations - send and reply)
+  - For 10 events and 2000 messages (40 thousand operations - send and reply)
     - rocketchat:streamer: ~32 seconds, increase of ~35mb of RAM
     - arunoda:meteor-stream: ~43 seconds, increase of ~80mb of RAM
 - Read permission cached by event name by client at subscription time
