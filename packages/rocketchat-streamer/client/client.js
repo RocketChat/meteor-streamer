@@ -43,12 +43,12 @@ class StreamerCentral extends EV {
 Meteor.StreamerCentral = new StreamerCentral;
 
 Meteor.Streamer = class Streamer extends EV {
-	constructor(name, {useCollection = false, ddpConnection = undefined } = {}) {
+	constructor(name, {useCollection = false, ddpConnection = Meteor.connection } = {}) {
 		if (Meteor.StreamerCentral.instances[name]) {
 			console.warn('Streamer instance already exists:', name);
 			return Meteor.StreamerCentral.instances[name];
 		}
-		Meteor.StreamerCentral.setupDdpConnection(name, ddpConnection || Meteor.connection);
+		Meteor.StreamerCentral.setupDdpConnection(name, ddpConnection);
 
 		super();
 
