@@ -197,3 +197,9 @@ streamer.allowWrite('notifications', function(eventName, type) { // Only admin u
 
 ### 0.4.0 (2016-05-21)
 * Added optional ddpConnection to Streamer constructor
+
+### 0.3.5 (2016-05-02)
+* Fix some ES6 errors
+
+### 0.3.4 (2016-05-01)
+* Remove all listeners on unsubscribe
