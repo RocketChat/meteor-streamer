@@ -1,4 +1,4 @@
-const streamer  = new Meteor.Streamer('chat');
+const streamer = new Meteor.Streamer('chat');
 
 if(Meteor.isClient) {
 	const messages = new Mongo.Collection(null);
