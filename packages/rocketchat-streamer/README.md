@@ -73,6 +73,7 @@ new Meteor.Streamer(name, [options])
 - **name - String** REQUIRED Unique name to identify stream between server and client
 - **options - Object** OPTIONAL
   - **useCollection - Boolean** Set to `true` to enable the compatible mode `default false`
+  - **ddpConnection - Object** The DDP connection to be used `default Meteor.connection`
 
 #### Server
 ```javascript
@@ -150,7 +151,7 @@ streamer.allowRead('notifications', function() { // Only admin users can read no
       return true;
     }
   }
-  
+
   return false;
 });
 ```
@@ -184,10 +185,15 @@ streamer.allowWrite('notifications', function(eventName, type) { // Only admin u
       return true;
     }
   }
-  
+
   return false;
 });
 ```
 
 <!--### Compatibility mode-->
 <!--TODO-->
+
+# History
+
+### 0.4.0 (2016-05-21)
+* Added optional ddpConnection to Streamer constructor
