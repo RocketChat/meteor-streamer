@@ -11,8 +11,16 @@ class StreamerCentral extends EV {
 		super();
 
 		this.instances = {};
+		this.ddpConnections = {};		// since each Streamer instance can provide its own ddp connection, store them by streamer name
 
-		Meteor.connection._stream.on('message', (raw_msg) => {
+	}
+
+	setupDdpConnection(name, ddpConnection) {
+		// make sure we only setup event listeners for each ddp connection once
+		if (ddpConnection.hasMeteorStreamerEventListeners) {
+			return;
+		}
+		ddpConnection._stream.on('message', (raw_msg) => {
 			const msg = DDPCommon.parseDDP(raw_msg);
 			if (msg && msg.msg === 'changed' && msg.collection && msg.fields && msg.fields.eventName && msg.fields.args) {
 				msg.fields.args.unshift(msg.fields.eventName);
@@ -20,19 +28,31 @@ class StreamerCentral extends EV {
 				this.emit.apply(this, msg.fields.args);
 			}
 		});
+		// store ddp connection
+		this.storeDdpConnection(name, ddpConnection);
+
+	}
+
+	storeDdpConnection(name, ddpConnection) {
+		// mark the connection as setup for Streamer, and store it
+		ddpConnection.hasMeteorStreamerEventListeners = true;
+		this.ddpConnections[name] = ddpConnection;
 	}
 }
 
 Meteor.StreamerCentral = new StreamerCentral;
 
 Meteor.Streamer = class Streamer extends EV {
-	constructor(name, {useCollection = false} = {}) {
+	constructor(name, {useCollection = false, ddpConnection = undefined } = {}) {
 		if (Meteor.StreamerCentral.instances[name]) {
 			console.warn('Streamer instance already exists:', name);
 			return Meteor.StreamerCentral.instances[name];
 		}
+		Meteor.StreamerCentral.setupDdpConnection(name, ddpConnection || Meteor.connection);
 
 		super();
+
+		this.ddpConnection = ddpConnection || Meteor.connection;
 
 		Meteor.StreamerCentral.instances[name] = this;
 
@@ -47,7 +67,7 @@ Meteor.Streamer = class Streamer extends EV {
 			}
 		});
 
-		Meteor.connection._stream.on('reset', () => {
+		this.ddpConnection._stream.on('reset', () => {
 			super.emit.call(this, '__reconnect__');
 		});
 	}
@@ -97,7 +117,7 @@ Meteor.Streamer = class Streamer extends EV {
 	subscribe(eventName) {
 		let subscribe;
 		Tracker.nonreactive(() => {
-			subscribe = Meteor.subscribe(this.subscriptionName, eventName, this.useCollection, {
+			subscribe = this.ddpConnection.subscribe(this.subscriptionName, eventName, this.useCollection, {
 				onStop: () => {
 					this.unsubscribe(eventName);
 				}
@@ -146,6 +166,6 @@ Meteor.Streamer = class Streamer extends EV {
 	}
 
 	emit(...args) {
-		Meteor.call(this.subscriptionName, ...args);
+		this.ddpConnection.call(this.subscriptionName, ...args);
 	}
 };
