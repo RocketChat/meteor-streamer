@@ -190,9 +190,6 @@ streamer.allowWrite('notifications', function(eventName, type) { // Only admin u
 });
 ```
 
-<!--### Compatibility mode-->
-<!--TODO-->
-
 # History
 
 ### 0.4.0 (2016-05-21)
@@ -203,3 +200,7 @@ streamer.allowWrite('notifications', function(eventName, type) { // Only admin u
 
 ### 0.3.4 (2016-05-01)
 * Remove all listeners on unsubscribe
+
+
+<!--### Compatibility mode-->
+<!--TODO-->
