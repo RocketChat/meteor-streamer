@@ -1,11 +1,11 @@
 Package.describe({
 	name: 'rocketchat:streamer',
-	version: '0.4.0',
+	version: '0.5.0',
 	summary: 'DB less realtime communication for meteor',
 	git: 'https://github.com/RocketChat/meteor-streamer.git'
 });
 
-Package.on_use(function (api) {
+Package.on_use(function(api) {
 	api.use('ddp-common@1.2.2');
 	api.use('ecmascript@0.1.6');
 	api.use('check@1.1.0');

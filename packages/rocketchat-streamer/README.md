@@ -123,6 +123,9 @@ streamer.on('message', function(message) {
 ```
 
 ## .allowRead('eventName', 'all') (Server only)
+This permission will be evaluate only 1 time per client, so you decide if
+the connections is allowed or not, you can't manage permissions based on data.
+
 ```javascript
 streamer.allowRead([eventName], permission);
 ```
@@ -154,6 +157,33 @@ streamer.allowRead('notifications', function() { // Only admin users can read no
 
   return false;
 });
+```
+
+## .allowEmit('eventName', 'all') (Server only)
+This permission will be evaluate (executed) for each data for eche client subscribed,
+this is much more expensive then **allowRead** but you can manage permissions based on
+each data.
+
+```javascript
+streamer.allowEmit([eventName], permission);
+```
+- **eventName - String** OPTIONAL The event name to apply permissions, if not informed will apply the permission for all events
+- **permission - Function/String** REQUIRED
+  - **Function(eventName, ...args)** The function should return true to allow emite
+    - Param **eventName** The event name, useful when use one function to manage permissions for all events
+    - Scope **this.userId** The id of the logged user
+    - Scope **this.connection** The connection between client and server
+  - **String** There are shortcuts for permissions
+    - **all** Allow emit for everyone [default]
+    - **none** Deny emit for everyone
+    - **logged** Allow emit for logged users
+
+```javascript
+//Examples
+
+streamer.allowEmit('all'); // Everyone can emit all events
+
+streamer.allowEmit('chat', 'logged'); // Only emit for logged users
 ```
 
 ## .allowWrite('eventName', 'all') (Server only)
@@ -191,6 +221,9 @@ streamer.allowWrite('notifications', function(eventName, type) { // Only admin u
 ```
 
 # History
+
+### 0.5.0 (2016-06-07)
+* Add a new method to control data flow `allowEmit`
 
 ### 0.4.0 (2016-05-21)
 * Added optional ddpConnection to Streamer constructor
