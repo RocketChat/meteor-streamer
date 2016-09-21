@@ -47,7 +47,7 @@ class SvrStreamerCentral extends EV {
 Meteor.SvrStreamerCentral = new SvrStreamerCentral;
 
 Meteor.SvrStreamer = class SvrStreamer extends EV {
-    constructor(name, {useCollection = false, url = '127.0.0.1' } = {}) {
+    constructor(name, url) {
         if (Meteor.SvrStreamerCentral.instances[name]) {
             console.warn('Streamer instance already exists:', name);
             return Meteor.SvrStreamerCentral.instances[name];
@@ -56,12 +56,12 @@ Meteor.SvrStreamer = class SvrStreamer extends EV {
 
         super();
 
-        this.ddpConnection = ddpConnection || Meteor.connection;
+        this.ddpConnection = ddpConnection;
 
         Meteor.SvrStreamerCentral.instances[name] = this;
 
         this.name = name;
-        this.useCollection = useCollection;
+        this.useCollection = false;
         this.subscriptions = {};
 
         Meteor.SvrStreamerCentral.on(this.subscriptionName, (eventName, ...args) => {

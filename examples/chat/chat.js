@@ -72,7 +72,7 @@ if (Meteor.isServer) {
         };
 
         networkStreamer.on('networkMessage', function (message) {
-            console.log('received bt serverServer', message.text);
+            console.log('received by serverServer', message);
         });
 
         Meteor.setInterval(function () {

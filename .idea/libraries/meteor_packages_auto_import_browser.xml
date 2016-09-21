@@ -36,8 +36,6 @@
         <item url="file://$USER_HOME$/.meteor/packages/reload/1.1.4/web.browser/deprecated.js" />
         <item url="file://$USER_HOME$/.meteor/packages/reload/1.1.4/web.browser/reload.js" />
         <item url="file://$USER_HOME$/.meteor/packages/retry/1.0.4/web.browser/retry.js" />
-        <item url="file://$USER_HOME$/.meteor/packages/rocketchat_streamer/0.3.5/web.browser/lib/ev.js" />
-        <item url="file://$USER_HOME$/.meteor/packages/rocketchat_streamer/0.3.5/web.browser/client/client.js" />
         <item url="file://$USER_HOME$/.meteor/packages/session/1.1.1/web.browser/session.js" />
         <item url="file://$USER_HOME$/.meteor/packages/spacebars/1.0.7/web.browser/spacebars-runtime.js" />
         <item url="file://$USER_HOME$/.meteor/packages/spacebars-compiler/1.0.7/web.browser/react.js" />
@@ -125,6 +123,8 @@
         <item url="file://$USER_HOME$/.meteor/packages/blaze-tools/1.0.4/web.browser/tokens.js" />
         <item url="file://$USER_HOME$/.meteor/packages/blaze-tools/1.0.4/web.browser/tojs.js" />
         <item url="file://$USER_HOME$/.meteor/packages/blaze-tools/1.0.4/web.browser/preamble.js" />
+        <item url="file://$USER_HOME$/.meteor/packages/rocketchat_streamer/0.5.0/web.browser/client/client.js" />
+        <item url="file://$USER_HOME$/.meteor/packages/rocketchat_streamer/0.5.0/web.browser/lib/ev.js" />
         <item url="file://$USER_HOME$/.meteor/packages/accounts-password/1.1.4/web.browser/password_client.js" />
         <item url="file://$USER_HOME$/.meteor/packages/service-configuration/1.0.5/web.browser/service_configuration_common.js" />
         <item url="file://$USER_HOME$/.meteor/packages/observe-sequence/1.0.7/web.browser/observe_sequence.js" />
@@ -165,8 +165,6 @@
       <root url="file://$USER_HOME$/.meteor/packages/reload/1.1.4/web.browser/deprecated.js" />
       <root url="file://$USER_HOME$/.meteor/packages/reload/1.1.4/web.browser/reload.js" />
       <root url="file://$USER_HOME$/.meteor/packages/retry/1.0.4/web.browser/retry.js" />
-      <root url="file://$USER_HOME$/.meteor/packages/rocketchat_streamer/0.3.5/web.browser/lib/ev.js" />
-      <root url="file://$USER_HOME$/.meteor/packages/rocketchat_streamer/0.3.5/web.browser/client/client.js" />
       <root url="file://$USER_HOME$/.meteor/packages/session/1.1.1/web.browser/session.js" />
       <root url="file://$USER_HOME$/.meteor/packages/spacebars/1.0.7/web.browser/spacebars-runtime.js" />
       <root url="file://$USER_HOME$/.meteor/packages/spacebars-compiler/1.0.7/web.browser/react.js" />
@@ -254,6 +252,8 @@
       <root url="file://$USER_HOME$/.meteor/packages/blaze-tools/1.0.4/web.browser/tokens.js" />
       <root url="file://$USER_HOME$/.meteor/packages/blaze-tools/1.0.4/web.browser/tojs.js" />
       <root url="file://$USER_HOME$/.meteor/packages/blaze-tools/1.0.4/web.browser/preamble.js" />
+      <root url="file://$USER_HOME$/.meteor/packages/rocketchat_streamer/0.5.0/web.browser/client/client.js" />
+      <root url="file://$USER_HOME$/.meteor/packages/rocketchat_streamer/0.5.0/web.browser/lib/ev.js" />
       <root url="file://$USER_HOME$/.meteor/packages/accounts-password/1.1.4/web.browser/password_client.js" />
       <root url="file://$USER_HOME$/.meteor/packages/service-configuration/1.0.5/web.browser/service_configuration_common.js" />
       <root url="file://$USER_HOME$/.meteor/packages/observe-sequence/1.0.7/web.browser/observe_sequence.js" />
