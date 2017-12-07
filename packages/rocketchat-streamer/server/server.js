@@ -173,12 +173,12 @@ Meteor.Streamer = class Streamer extends EV {
 		}
 	}
 
-	isReadAllowed(scope, eventName) {
+	isReadAllowed(scope, eventName, args) {
 		if (this._allowRead[eventName]) {
-			return this._allowRead[eventName].call(scope, eventName);
+			return this._allowRead[eventName].call(scope, eventName, ...args);
 		}
 
-		return this._allowRead['__all__'].call(scope, eventName);
+		return this._allowRead['__all__'].call(scope, eventName, ...args);
 	}
 
 	isEmitAllowed(scope, eventName, ...args) {
@@ -260,7 +260,7 @@ Meteor.Streamer = class Streamer extends EV {
 
 	iniPublication() {
 		const stream = this;
-		Meteor.publish(this.subscriptionName, function(eventName, useCollection) {
+		Meteor.publish(this.subscriptionName, function(eventName, { useCollection, args }) {
 			check(eventName, String);
 			check(useCollection, Match.Optional(Boolean));
 
@@ -269,7 +269,7 @@ Meteor.Streamer = class Streamer extends EV {
 				return;
 			}
 
-			if (stream.isReadAllowed(this, eventName) !== true) {
+			if (stream.isReadAllowed(this, eventName, args) !== true) {
 				this.stop();
 				return;
 			}

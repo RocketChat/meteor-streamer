@@ -114,10 +114,10 @@ Meteor.Streamer = class Streamer extends EV {
 		delete this.subscriptions[eventName];
 	}
 
-	subscribe(eventName) {
+	subscribe(eventName, args) {
 		let subscribe;
 		Tracker.nonreactive(() => {
-			subscribe = this.ddpConnection.subscribe(this.subscriptionName, eventName, this.useCollection, {
+			subscribe = this.ddpConnection.subscribe(this.subscriptionName, eventName, { useCollection: this.useCollection, args }, {
 				onStop: () => {
 					this.unsubscribe(eventName);
 				}
@@ -139,26 +139,30 @@ Meteor.Streamer = class Streamer extends EV {
 		}
 	}
 
-	once(eventName, callback) {
+	once(eventName, ...args) {
+		const callback = args.pop();
+
 		check(eventName, NonEmptyString);
 		check(callback, Function);
 
 		if (!this.subscriptions[eventName]) {
 			this.subscriptions[eventName] = {
-				subscription: this.subscribe(eventName)
+				subscription: this.subscribe(eventName, args)
 			};
 		}
 
 		super.once(eventName, callback);
 	}
 
-	on(eventName, callback) {
+	on(eventName, ...args) {
+		const callback = args.pop();
+
 		check(eventName, NonEmptyString);
 		check(callback, Function);
 
 		if (!this.subscriptions[eventName]) {
 			this.subscriptions[eventName] = {
-				subscription: this.subscribe(eventName)
+				subscription: this.subscribe(eventName, args)
 			};
 		}
 
