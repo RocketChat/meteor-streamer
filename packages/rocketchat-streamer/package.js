@@ -1,6 +1,6 @@
 Package.describe({
 	name: 'rocketchat:streamer',
-	version: '0.5.0',
+	version: '0.6.0',
 	summary: 'DB less realtime communication for meteor',
 	git: 'https://github.com/RocketChat/meteor-streamer.git'
 });
