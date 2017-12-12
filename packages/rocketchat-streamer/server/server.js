@@ -260,9 +260,22 @@ Meteor.Streamer = class Streamer extends EV {
 
 	iniPublication() {
 		const stream = this;
-		Meteor.publish(this.subscriptionName, function(eventName, { useCollection, args }) {
+		Meteor.publish(this.subscriptionName, function(eventName, options) {
 			check(eventName, String);
-			check(useCollection, Match.Optional(Boolean));
+
+			let useCollection, args = [];
+
+			if (typeof options === 'boolean') {
+				useCollection = options;
+			} else {
+				if (options.useCollection) {
+					useCollection = options.useCollection;
+				}
+
+				if (options.args) {
+					args = options.args;
+				}
+			}
 
 			if (eventName.length === 0) {
 				this.stop();
