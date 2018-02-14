@@ -262,6 +262,10 @@ Meteor.Streamer = class Streamer extends EV {
 		const stream = this;
 		Meteor.publish(this.subscriptionName, function(eventName, options) {
 			check(eventName, String);
+			check(options, Match.OneOf(Boolean, {
+				useCollection: Boolean,
+				args: Array,
+			}));
 
 			let useCollection, args = [];
 
