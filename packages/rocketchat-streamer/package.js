@@ -15,7 +15,12 @@ Package.on_use(function(api) {
 
 	api.addFiles('client/client.js', 'client');
 
+	api.addFiles('server/svrClient.js', 'server');
+
 	api.addFiles('server/server.js', 'server');
 
 	api.export('Streamer');
+	
+	api.export('SvrStreamer', 'server');
+	
 });
