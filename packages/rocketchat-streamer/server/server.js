@@ -1,6 +1,15 @@
 /* globals EV */
 /* eslint new-cap: false */
 
+import redisMq from 'mqemitter-redis';
+
+let mq;
+if (process.env.REDIS) {
+	mq = redisMq({
+		host: process.env.REDIS
+	});
+}
+
 class StreamerCentral extends EV {
 	constructor() {
 		super();
@@ -11,9 +20,10 @@ class StreamerCentral extends EV {
 
 Meteor.StreamerCentral = new StreamerCentral;
 
+const defaultEncoder = (msg) => new Buffer(EJSON.stringify(msg));
 
 Meteor.Streamer = class Streamer extends EV {
-	constructor(name, {retransmit = true, retransmitToSelf = false} = {}) {
+	constructor(name, {retransmit = true, retransmitToSelf = false, encoder = defaultEncoder} = {}) {
 		if (Meteor.StreamerCentral.instances[name]) {
 			console.warn('Streamer instance already exists:', name);
 			return Meteor.StreamerCentral.instances[name];
@@ -30,6 +40,8 @@ Meteor.Streamer = class Streamer extends EV {
 		this.subscriptions = [];
 		this.subscriptionsByEventName = {};
 		this.transformers = {};
+
+		this.encoder = encoder;
 
 		this.iniPublication();
 		this.initMethod();
@@ -359,6 +371,11 @@ Meteor.Streamer = class Streamer extends EV {
 		if (!Array.isArray(subscriptions)) {
 			return;
 		}
+
+		mq && mq.emit({
+			topic: `${ this.name }/${ eventName }`,
+			payload: this.encoder(args)
+		});
 
 		subscriptions.forEach((subscription) => {
 			if (this.retransmitToSelf === false && origin && origin === subscription.subscription.connection) {

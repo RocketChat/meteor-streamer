@@ -1,8 +1,12 @@
 Package.describe({
 	name: 'rocketchat:streamer',
-	version: '0.6.2',
+	version: '0.7.0-alpha',
 	summary: 'DB less realtime communication for meteor',
 	git: 'https://github.com/RocketChat/meteor-streamer.git'
+});
+
+Npm.depends({
+	'mqemitter-redis': '3.0.0'
 });
 
 Package.on_use(function(api) {
