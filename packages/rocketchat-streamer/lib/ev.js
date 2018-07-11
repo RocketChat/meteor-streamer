@@ -7,15 +7,15 @@ EV = class EV {
 	}
 
 	emit(event, ...args) {
-		if (this.handlers[event]) {
-			this.handlers[event].forEach((handler) => handler.apply(this, args));
-		}
+		return this.handlers[event] && this.handlers[event].forEach(handler => handler.apply(this, args));
 	}
 
 	emitWithScope(event, scope, ...args) {
-		if (this.handlers[event]) {
-			this.handlers[event].forEach((handler) => handler.apply(scope, args));
-		}
+		return this.handlers[event] && this.handlers[event].forEach(handler => handler.apply(scope, args));
+	}
+
+	listenerCount(event) {
+		return (this.handlers[event] || 0) && this.handlers[event].length;
 	}
 
 	on(event, callback) {
@@ -26,19 +26,19 @@ EV = class EV {
 	}
 
 	once(event, callback) {
-		self = this;
-		self.on(event, function onetimeCallback() {
+		this.on(event, function onetimeCallback() {
+			this.removeListener(event, onetimeCallback);
 			callback.apply(this, arguments);
-			self.removeListener(event, onetimeCallback);
 		});
 	}
 
 	removeListener(event, callback) {
-		if(this.handlers[event]) {
-			const index = this.handlers[event].indexOf(callback);
-			if (index > -1) {
-				this.handlers[event].splice(index, 1);
-			}
+		if (!this.handlers[event]) {
+			return;
+		}
+		const index = this.handlers[event].indexOf(callback);
+		if (index > -1) {
+			this.handlers[event].splice(index, 1);
 		}
 	}
 
