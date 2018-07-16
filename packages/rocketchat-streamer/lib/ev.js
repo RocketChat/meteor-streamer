@@ -15,7 +15,7 @@ EV = class EV {
 	}
 
 	listenerCount(event) {
-		return (this.handlers[event] || 0) && this.handlers[event].length;
+		return (this.handlers[event] && this.handlers[event].length) || 0;
 	}
 
 	on(event, callback) {
