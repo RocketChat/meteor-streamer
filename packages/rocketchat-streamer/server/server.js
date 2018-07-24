@@ -1,4 +1,4 @@
-/* globals EV */
+/* globals EV DDPCommon */
 /* eslint new-cap: false */
 
 class StreamerCentral extends EV {
@@ -10,6 +10,25 @@ class StreamerCentral extends EV {
 }
 
 Meteor.StreamerCentral = new StreamerCentral;
+
+const changedPayload = function (collection, id, fields) {
+	if (_.isEmpty(fields)) {
+		return;
+	}
+	return DDPCommon.stringifyDDP({
+		msg: 'changed',
+		collection,
+		id,
+		fields
+	});
+};
+
+const send = function (self, msg) {
+	if (!self.socket) {
+		return;
+	}
+	self.socket.send(msg);
+};
 
 
 Meteor.Streamer = class Streamer extends EV {
@@ -360,16 +379,22 @@ Meteor.Streamer = class Streamer extends EV {
 			return;
 		}
 
+		const msg = changedPayload(this.subscriptionName, 'id', {
+			eventName,
+			args
+		});
+
+		if(!msg) {
+			return;
+		}
+
 		subscriptions.forEach((subscription) => {
 			if (this.retransmitToSelf === false && origin && origin === subscription.subscription.connection) {
 				return;
 			}
 
 			if (this.isEmitAllowed(subscription.subscription, eventName, ...args)) {
-				subscription.subscription._session.sendChanged(this.subscriptionName, 'id', {
-					eventName: eventName,
-					args: args
-				});
+				send(subscription.subscription._session, msg);
 			}
 		});
 	}
