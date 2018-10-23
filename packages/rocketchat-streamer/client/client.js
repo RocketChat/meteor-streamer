@@ -92,7 +92,7 @@ Meteor.Streamer = class Streamer extends EV {
 		this._useCollection = useCollection;
 	}
 
-	[stop](eventName) {
+	stop(eventName) {
 		return this.subscriptions[eventName] && this.subscriptions[eventName].subscription && this.subscriptions[eventName].subscription.stop();
 	}
 
