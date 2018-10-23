@@ -1,9 +1,5 @@
 /* globals DDPCommon, EV */
 /* eslint-disable new-cap */
-const unsubscribe = Symbol('unsubscribe');
-const subscribe = Symbol('subscribe');
-const stop = Symbol('stop');
-
 const NonEmptyString = Match.Where(function (x) {
 	check(x, String);
 	return x.length > 0;
@@ -104,12 +100,12 @@ Meteor.Streamer = class Streamer extends EV {
 		Object.keys(this.subscriptions).forEach(eventName => this.removeAllListeners(eventName));
 	}
 
-	[unsubscribe](eventName) {
+	unsubscribe(eventName) {
 		this.subscriptions[eventName] = [];
 		super.removeAllListeners(eventName);
 	}
 
-	[subscribe](eventName, args) {
+	subscribe(eventName, args) {
 		if (this.subscriptions[eventName]) {
 			return;
 		}
@@ -117,7 +113,7 @@ Meteor.Streamer = class Streamer extends EV {
 			this.subscriptionName,
 			eventName,
 			{ useCollection: this.useCollection, args },
-			{ onStop: () => this[unsubscribe](eventName) }
+			{ onStop: () => this.unsubscribe(eventName) }
 		));
 		this.subscriptions[eventName] = { subscription };
 	}
@@ -137,12 +133,12 @@ Meteor.Streamer = class Streamer extends EV {
 
 	removeAllListeners(eventName) {
 		super.removeAllListeners(eventName);
-		return this[stop](eventName);
+		return this.stop(eventName);
 	}
 
 	removeListener(eventName, ...args) {
 		if (this.listenerCount(eventName) === 1) {
-			this[stop](eventName);
+			this.stop(eventName);
 		}
 		super.removeListener(eventName, ...args);
 	}
@@ -153,7 +149,7 @@ Meteor.Streamer = class Streamer extends EV {
 		const callback = args.pop();
 		check(callback, Function);
 
-		this[subscribe](eventName, args);
+		this.subscribe(eventName, args);
 		super.on(eventName, callback);
 	}
 
@@ -163,12 +159,12 @@ Meteor.Streamer = class Streamer extends EV {
 		const callback = args.pop();
 		check(callback, Function);
 
-		this[subscribe](eventName, args);
+		this.subscribe(eventName, args);
 
 		super.once(eventName, (...args) => {
 			callback(...args);
 			if (this.listenerCount(eventName) === 0) {
-				return this[stop](eventName);
+				return this.stop(eventName);
 			}
 		});
 	}
