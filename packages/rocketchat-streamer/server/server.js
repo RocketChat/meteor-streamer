@@ -1,6 +1,6 @@
 /* globals EV */
-import { DDPCommon } from 'meteor/ddp-common';
 /* eslint new-cap: false */
+import { DDPCommon } from 'meteor/ddp-common';
 
 class StreamerCentral extends EV {
 	constructor() {
@@ -278,59 +278,63 @@ Meteor.Streamer = class Streamer extends EV {
 		return args;
 	}
 
+
+	_publish(publication, eventName, options) {
+		check(eventName, String);
+		check(options, Match.OneOf(Boolean, {
+			useCollection: Boolean,
+			args: Array,
+		}));
+
+		let useCollection, args = [];
+
+		if (typeof options === 'boolean') {
+			useCollection = options;
+		} else {
+			if (options.useCollection) {
+				useCollection = options.useCollection;
+			}
+
+			if (options.args) {
+				args = options.args;
+			}
+		}
+
+		if (eventName.length === 0) {
+			publication.stop();
+			return false;
+		}
+
+		if (this.isReadAllowed(publication, eventName, args) !== true) {
+			publication.stop();
+			return false;
+		}
+
+		const subscription = {
+			subscription: publication,
+			eventName: eventName
+		};
+
+		this.addSubscription(subscription, eventName);
+
+		publication.onStop(() => {
+			this.removeSubscription(subscription, eventName);
+		});
+
+		if (useCollection === true) {
+			// Collection compatibility
+			publication._session.sendAdded(this.subscriptionName, 'id', {
+				eventName: eventName
+			});
+		}
+
+		publication.ready();
+		return true;
+	}
+
 	iniPublication() {
 		const stream = this;
-		Meteor.publish(this.subscriptionName, function(eventName, options) {
-			check(eventName, String);
-			check(options, Match.OneOf(Boolean, {
-				useCollection: Boolean,
-				args: Array,
-			}));
-
-			let useCollection, args = [];
-
-			if (typeof options === 'boolean') {
-				useCollection = options;
-			} else {
-				if (options.useCollection) {
-					useCollection = options.useCollection;
-				}
-
-				if (options.args) {
-					args = options.args;
-				}
-			}
-
-			if (eventName.length === 0) {
-				this.stop();
-				return;
-			}
-
-			if (stream.isReadAllowed(this, eventName, args) !== true) {
-				this.stop();
-				return;
-			}
-
-			const subscription = {
-				subscription: this,
-				eventName: eventName
-			};
-
-			stream.addSubscription(subscription, eventName);
-
-			this.onStop(() => {
-				stream.removeSubscription(subscription, eventName);
-			});
-
-			if (useCollection === true) {
-				// Collection compatibility
-				this._session.sendAdded(stream.subscriptionName, 'id', {
-					eventName: eventName
-				});
-			}
-
-			this.ready();
-		});
+		Meteor.publish(this.subscriptionName, function (...args) { return stream._publish.apply(stream, [this, ...args]); });
 	}
 
 	initMethod() {
@@ -402,6 +406,10 @@ Meteor.Streamer = class Streamer extends EV {
 
 	emit(eventName, ...args) {
 		this._emit(eventName, args, undefined, true);
+	}
+
+	__emit(...args) {
+		return super.emit(...args);
 	}
 
 	emitWithoutBroadcast(eventName, ...args) {
