@@ -1,5 +1,6 @@
-/* globals EV DDPCommon */
+/* globals EV */
 /* eslint new-cap: false */
+import { DDPCommon } from 'meteor/ddp-common';
 
 class StreamerCentral extends EV {
 	constructor() {
