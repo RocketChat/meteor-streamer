@@ -1,6 +1,5 @@
 /* globals DDPCommon, EV */
 /* eslint-disable new-cap */
-
 const NonEmptyString = Match.Where(function (x) {
 	check(x, String);
 	return x.length > 0;
@@ -12,7 +11,6 @@ class StreamerCentral extends EV {
 
 		this.instances = {};
 		this.ddpConnections = {};		// since each Streamer instance can provide its own ddp connection, store them by streamer name
-
 	}
 
 	setupDdpConnection(name, ddpConnection) {
@@ -43,7 +41,7 @@ class StreamerCentral extends EV {
 Meteor.StreamerCentral = new StreamerCentral;
 
 Meteor.Streamer = class Streamer extends EV {
-	constructor(name, {useCollection = false, ddpConnection = Meteor.connection } = {}) {
+	constructor(name, { useCollection = false, ddpConnection = Meteor.connection } = {}) {
 		if (Meteor.StreamerCentral.instances[name]) {
 			console.warn('Streamer instance already exists:', name);
 			return Meteor.StreamerCentral.instances[name];
@@ -95,35 +93,29 @@ Meteor.Streamer = class Streamer extends EV {
 	}
 
 	stop(eventName) {
-		if (this.subscriptions[eventName] && this.subscriptions[eventName].subscription) {
-			this.subscriptions[eventName].subscription.stop();
-		}
-		this.unsubscribe(eventName);
+		return this.subscriptions[eventName] && this.subscriptions[eventName].subscription && this.subscriptions[eventName].subscription.stop();
 	}
 
 	stopAll() {
-		for (let eventName in this.subscriptions) {
-			if (this.subscriptions.hasOwnProperty(eventName)) {
-				this.stop(eventName);
-			}
-		}
+		Object.keys(this.subscriptions).forEach(eventName => this.removeAllListeners(eventName));
 	}
 
 	unsubscribe(eventName) {
-		this.removeAllListeners(eventName);
 		delete this.subscriptions[eventName];
+		super.removeAllListeners(eventName);
 	}
 
 	subscribe(eventName, args) {
-		let subscribe;
-		Tracker.nonreactive(() => {
-			subscribe = this.ddpConnection.subscribe(this.subscriptionName, eventName, { useCollection: this.useCollection, args }, {
-				onStop: () => {
-					this.unsubscribe(eventName);
-				}
-			});
-		});
-		return subscribe;
+		if (this.subscriptions[eventName]) {
+			return;
+		}
+		const subscription = Tracker.nonreactive(() => this.ddpConnection.subscribe(
+			this.subscriptionName,
+			eventName,
+			{ useCollection: this.useCollection, args },
+			{ onStop: () => this.unsubscribe(eventName) }
+		));
+		this.subscriptions[eventName] = { subscription };
 	}
 
 	onReconnect(fn) {
@@ -139,34 +131,42 @@ Meteor.Streamer = class Streamer extends EV {
 		}
 	}
 
-	once(eventName, ...args) {
-		const callback = args.pop();
+	removeAllListeners(eventName) {
+		super.removeAllListeners(eventName);
+		return this.stop(eventName);
+	}
 
-		check(eventName, NonEmptyString);
-		check(callback, Function);
-
-		if (!this.subscriptions[eventName]) {
-			this.subscriptions[eventName] = {
-				subscription: this.subscribe(eventName, args)
-			};
+	removeListener(eventName, ...args) {
+		if (this.listenerCount(eventName) === 1) {
+			this.stop(eventName);
 		}
-
-		super.once(eventName, callback);
+		super.removeListener(eventName, ...args);
 	}
 
 	on(eventName, ...args) {
-		const callback = args.pop();
-
 		check(eventName, NonEmptyString);
+
+		const callback = args.pop();
 		check(callback, Function);
 
-		if (!this.subscriptions[eventName]) {
-			this.subscriptions[eventName] = {
-				subscription: this.subscribe(eventName, args)
-			};
-		}
-
+		this.subscribe(eventName, args);
 		super.on(eventName, callback);
+	}
+
+	once(eventName, ...args) {
+		check(eventName, NonEmptyString);
+
+		const callback = args.pop();
+		check(callback, Function);
+
+		this.subscribe(eventName, args);
+
+		super.once(eventName, (...args) => {
+			callback(...args);
+			if (this.listenerCount(eventName) === 0) {
+				return this.stop(eventName);
+			}
+		});
 	}
 
 	emit(...args) {
