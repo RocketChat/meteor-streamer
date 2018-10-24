@@ -28,7 +28,7 @@ EV = class EV {
 	once(event, callback) {
 		const self = this;
 		this.on(event, function onetimeCallback() {
-			this.removeListener(event, onetimeCallback);
+			self.removeListener(event, onetimeCallback);
 			callback.apply(this, arguments);
 		});
 	}
