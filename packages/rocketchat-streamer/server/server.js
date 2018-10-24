@@ -302,12 +302,12 @@ Meteor.Streamer = class Streamer extends EV {
 
 		if (eventName.length === 0) {
 			publication.stop();
-			return false;
+			throw new Meteor.Error('invalid-event-name');
 		}
 
 		if (this.isReadAllowed(publication, eventName, args) !== true) {
 			publication.stop();
-			return false;
+			throw new Meteor.Error('not-allowed');
 		}
 
 		const subscription = {
@@ -329,7 +329,6 @@ Meteor.Streamer = class Streamer extends EV {
 		}
 
 		publication.ready();
-		return true;
 	}
 
 	iniPublication() {
