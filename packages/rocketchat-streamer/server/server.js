@@ -407,6 +407,10 @@ Meteor.Streamer = class Streamer extends EV {
 		this._emit(eventName, args, undefined, true);
 	}
 
+	__emit(...args) {
+		return super.emit(...args);
+	}
+
 	emitWithoutBroadcast(eventName, ...args) {
 		this._emit(eventName, args, undefined, false);
 	}
