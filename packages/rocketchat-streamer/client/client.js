@@ -101,7 +101,7 @@ Meteor.Streamer = class Streamer extends EV {
 	}
 
 	unsubscribe(eventName) {
-		this.subscriptions[eventName] = [];
+		delete this.subscriptions[eventName];
 		super.removeAllListeners(eventName);
 	}
 
