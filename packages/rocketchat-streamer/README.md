@@ -161,7 +161,7 @@ streamer.allowRead('notifications', function() { // Only admin users can read no
 
 ## .allowEmit('eventName', 'all') (Server only)
 This permission will be evaluate (executed) for each data for each client subscribed,
-this is much more expensive then **allowRead** but you can manage permissions based on
+this is much more expensive than **allowRead** but you can manage permissions based on
 each data.
 
 ```javascript
