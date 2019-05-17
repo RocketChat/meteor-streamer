@@ -61,12 +61,12 @@ Meteor.Streamer = class Streamer extends EV {
 		Meteor.StreamerCentral.on(this.subscriptionName, (eventName, ...args) => {
 			if (this.subscriptions[eventName]) {
 				this.subscriptions[eventName].lastMessage = args;
-				super.emit.call(this, eventName, ...args);
+				EV.prototype.emit.call(this, eventName, ...args);
 			}
 		});
 
 		this.ddpConnection._stream.on('reset', () => {
-			super.emit.call(this, '__reconnect__');
+			EV.prototype.emit.call(this, '__reconnect__');
 		});
 	}
 
@@ -102,7 +102,7 @@ Meteor.Streamer = class Streamer extends EV {
 
 	unsubscribe(eventName) {
 		delete this.subscriptions[eventName];
-		super.removeAllListeners(eventName);
+		EV.prototype.removeAllListeners.call(this, eventName);
 	}
 
 	subscribe(eventName, args) {
@@ -120,7 +120,7 @@ Meteor.Streamer = class Streamer extends EV {
 
 	onReconnect(fn) {
 		if (typeof fn === 'function') {
-			super.on('__reconnect__', fn);
+			EV.prototype.on.call(this, '__reconnect__', fn);
 		}
 	}
 
@@ -132,7 +132,7 @@ Meteor.Streamer = class Streamer extends EV {
 	}
 
 	removeAllListeners(eventName) {
-		super.removeAllListeners(eventName);
+		EV.prototype.removeAllListeners.call(this, eventName);
 		return this.stop(eventName);
 	}
 
@@ -140,7 +140,7 @@ Meteor.Streamer = class Streamer extends EV {
 		if (this.listenerCount(eventName) === 1) {
 			this.stop(eventName);
 		}
-		super.removeListener(eventName, ...args);
+		EV.prototype.removeListener.call(this, eventName, ...args);
 	}
 
 	on(eventName, ...args) {
@@ -150,7 +150,7 @@ Meteor.Streamer = class Streamer extends EV {
 		check(callback, Function);
 
 		this.subscribe(eventName, args);
-		super.on(eventName, callback);
+		EV.prototype.on.call(this, eventName, callback);
 	}
 
 	once(eventName, ...args) {
@@ -161,7 +161,7 @@ Meteor.Streamer = class Streamer extends EV {
 
 		this.subscribe(eventName, args);
 
-		super.once(eventName, (...args) => {
+		EV.prototype.once.call(this, eventName, (...args) => {
 			callback(...args);
 			if (this.listenerCount(eventName) === 0) {
 				return this.stop(eventName);
