@@ -12,6 +12,12 @@ meteor add rocketchat:streamer
 
 ## History
 
+### 1.0.2 (2019-05-19)
+* Do not use `super` to call parent classes (fix for Edge browser)
+
+### 1.0.1 (2018-10-24)
+* Throw an error if subscribe not allowed
+
 ### 1.0.0 (2018-10-24)
 * Allow better way to override publish method
 * Avoid multiple `DDPCommon.stringifyDDP` for multiple subscriptions
