@@ -106,16 +106,21 @@ Meteor.Streamer = class Streamer extends EV {
 	}
 
 	subscribe(eventName, args) {
-		if (this.subscriptions[eventName]) {
-			return;
-		}
-		const subscription = Tracker.nonreactive(() => this.ddpConnection.subscribe(
-			this.subscriptionName,
-			eventName,
-			{ useCollection: this.useCollection, args },
-			{ onStop: () => this.unsubscribe(eventName) }
-		));
-		this.subscriptions[eventName] = { subscription };
+		return new Promise((resolve, reject) => {
+			if (this.subscriptions[eventName]) {
+				return resolve();
+			}
+			const subscription = Tracker.nonreactive(() => this.ddpConnection.subscribe(
+				this.subscriptionName,
+				eventName,
+				{ useCollection: this.useCollection, args },
+				{
+					onStop: () => reject(this.unsubscribe(eventName)),
+					onReady: resolve
+				}
+			));
+			this.subscriptions[eventName] = { subscription };
+		})
 	}
 
 	onReconnect(fn) {
@@ -149,8 +154,9 @@ Meteor.Streamer = class Streamer extends EV {
 		const callback = args.pop();
 		check(callback, Function);
 
-		this.subscribe(eventName, args);
 		EV.prototype.on.call(this, eventName, callback);
+
+		return this.subscribe(eventName, args);
 	}
 
 	once(eventName, ...args) {
@@ -159,14 +165,14 @@ Meteor.Streamer = class Streamer extends EV {
 		const callback = args.pop();
 		check(callback, Function);
 
-		this.subscribe(eventName, args);
-
 		EV.prototype.once.call(this, eventName, (...args) => {
 			callback(...args);
 			if (this.listenerCount(eventName) === 0) {
 				return this.stop(eventName);
 			}
 		});
+
+		return this.subscribe(eventName, args);
 	}
 
 	emit(...args) {
