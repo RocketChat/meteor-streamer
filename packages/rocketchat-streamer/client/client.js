@@ -43,6 +43,7 @@ Meteor.StreamerCentral = new StreamerCentral;
 Meteor.Streamer = class Streamer extends EV {
 	constructor(name, { useCollection = false, ddpConnection = Meteor.connection } = {}) {
 		if (Meteor.StreamerCentral.instances[name]) {
+			super();
 			console.warn('Streamer instance already exists:', name);
 			return Meteor.StreamerCentral.instances[name];
 		}
